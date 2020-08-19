@@ -19,10 +19,8 @@ public class HTree {
             }
         }
 
-        // build tree ,相同频率且位置总是相邻的合并
-        Comparator<HNode> order = Collections.reverseOrder((n1 ,n2) ->
-                Integer.compare(n2.getWeight(), n1.getWeight())  //(n1.getWeight() == n2.getWeight()) ? 0 : ((n1.getWeight() < n2.getWeight()) ? 1 : -1)
-        );
+        //(n1.getWeight() == n2.getWeight()) ? 0 : ((n1.getWeight() < n2.getWeight()) ? 1 : -1)
+        Comparator<HNode> order = Collections.reverseOrder((n1 ,n2) -> Integer.compare(n2.getWeight(), n1.getWeight()));
 
         List<HNode> nodes = new ArrayList<HNode>(rates.values()){
             // indexOf()
@@ -32,8 +30,9 @@ public class HTree {
                 return (this == obj);
             }
         };
+        nodes.sort(order);
 
-        Collections.sort(nodes, order);
+        // build tree ,相同频率且位置总是相邻的合并
         for (HNode each : nodes) {
             System.out.println(each.getWord() + ":" + each.getWeight());
         }

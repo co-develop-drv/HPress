@@ -1,5 +1,7 @@
 package date.iterator.compress.h;
 
+import java.util.List;
+
 public class HNode {
 
     private int originLocation;
@@ -12,10 +14,10 @@ public class HNode {
     private HNode preNode;
 
     // 子节点中权重较大的
-    private HNode leftNode;
+    private List<HNode> leftNode;
 
     // 较小的
-    private HNode rightNode;
+    private List<HNode> rightNode;
 
     public HNode(int originLocation, String word) {
         this.originLocation = originLocation;
@@ -52,20 +54,28 @@ public class HNode {
         this.preNode = preNode;
     }
 
-    public HNode getLeftNode() {
+    public List<HNode> getLeftNode() {
         return leftNode;
     }
 
-    public void setLeftNode(HNode leftNode) {
-        this.leftNode = leftNode;
+    public void setLeftNode(List<HNode> leftNode) {
+        this.leftNode.addAll(leftNode);
     }
 
-    public HNode getRightNode() {
+    public List<HNode> getRightNode() {
         return rightNode;
     }
 
-    public void setRightNode(HNode rightNode) {
-        this.rightNode = rightNode;
+    public void setRightNode(List<HNode> rightNode) {
+        this.rightNode.addAll(rightNode);
+    }
+
+    public void addLeftNode(HNode leftNode) {
+        this.leftNode.add(leftNode);
+    }
+
+    public void addRightNode(HNode rightNode) {
+        this.rightNode.add(rightNode);
     }
 
     public void addWeight(int i) {
