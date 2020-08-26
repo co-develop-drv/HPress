@@ -4,7 +4,14 @@ import java.util.*;
 
 public class HTree {
     // 当前词
-    private byte current;
+    private HNode currentNode;
+
+    private HNode root;
+
+    public HTree() {
+//        root = new HNode(-1, "", Integer.MAX_VALUE);
+        currentNode = null;
+    }
 
     public void input(final String input) {
         char[] list = splitWords(input);
@@ -32,9 +39,13 @@ public class HTree {
         };
         nodes.sort(order);
 
-        // build tree ,相同频率且位置总是相邻的合并
-        for (HNode each : nodes) {
-            System.out.println(each.getWord() + ":" + each.getWeight());
+        // todo 相同频率且位置总是相邻的合并
+        // 权重相同按ACSII排列，只出现一次的就没必要放到树里
+        currentNode = nodes.get(0);
+        for (int i = 1; i < nodes.size(); i++) {
+            System.out.println(nodes.get(i).getWord() + ":" + nodes.get(i).getWeight());
+            HNode node = nodes.get(i);
+            currentNode.aggregate(node);
         }
     }
 
