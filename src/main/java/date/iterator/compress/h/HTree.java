@@ -47,6 +47,8 @@ public class HTree {
             HNode node = nodes.get(i);
             currentNode.aggregate(node);
         }
+
+        // 最后遍历所有节点生成路径
     }
 
     private char[] splitWords(final String input) {

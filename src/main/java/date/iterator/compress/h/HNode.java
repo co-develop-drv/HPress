@@ -17,6 +17,9 @@ public class HNode implements Comparable<HNode> {
     // 较小的
     private HNode rightNode;
 
+    private String codePath;
+    private byte code;
+
     public HNode(int originLocation, String word) {
         this.originLocation = originLocation;
         this.word = word;
@@ -42,7 +45,6 @@ public class HNode implements Comparable<HNode> {
         if (this.compareTo(o) == 1) {
             // 左大，标记0
             // 右小，标记1
-            // todo 比较 ascii
             return coalize(o);
         } else if (this.compareTo(o) == 0) {
             if (this.originLocation == -1) {
