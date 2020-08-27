@@ -9,8 +9,6 @@ public class HNode implements Comparable<HNode> {
     // 出现次数
     private int weight;
 
-    private HNode preNode;
-
     // 子节点中权重较大的
     private HNode leftNode;
 
@@ -38,39 +36,8 @@ public class HNode implements Comparable<HNode> {
 
     @Override
     public int compareTo(HNode o) {
+        // 前大
         return Integer.compare(o.getWeight(), this.getWeight());
-    }
-
-    public HNode aggregate(final HNode o) {
-        if (this.compareTo(o) == 1) {
-            // 左大，标记0
-            // 右小，标记1
-            return coalize(o);
-        } else if (this.compareTo(o) == 0) {
-            if (this.originLocation == -1) {
-                // 新节点与原相加节点值相同
-                this.originLocation = o.getOriginLocation();
-                this.word = o.word;
-                return this;
-            }
-            return coalize(o);
-        } else {
-            // o 不小于右，但小于加和
-            HNode l = this.leftNode;
-            HNode r = this.rightNode;
-
-            // 与右合并，左变为右的右
-            // 如果三个都相等，todo 比较 ascii
-
-            return l;
-        }
-    }
-
-    private HNode coalize(final HNode o) {
-        HNode up = new HNode(-1, "", this.weight + o.getWeight());
-        up.setLeftNode(o); // 左大，标记0
-        up.setLeftNode(this); // 右小，标记1
-        return up;
     }
 
     public int getOriginLocation() {
@@ -89,31 +56,33 @@ public class HNode implements Comparable<HNode> {
         this.weight = weight;
     }
 
-    public HNode getPreNode() {
-        return preNode;
-    }
-
-    public void setPreNode(HNode preNode) {
-        this.preNode = preNode;
-    }
-
     public HNode getLeftNode() {
         return leftNode;
     }
 
-    public void setLeftNode(HNode leftNode) {
+    public HNode setLeftNode(HNode leftNode) {
         this.leftNode = leftNode;
+        return this;
     }
 
     public HNode getRightNode() {
         return rightNode;
     }
 
-    public void setRightNode(HNode rightNode) {
+    public HNode setRightNode(HNode rightNode) {
         this.rightNode = rightNode;
+        return this;
     }
 
     public void addWeight(int i) {
         this.weight += 1;
+    }
+
+    public void setOriginLocation(int originLocation) {
+        this.originLocation = originLocation;
+    }
+
+    public void setWord(String word) {
+        this.word = word;
     }
 }
