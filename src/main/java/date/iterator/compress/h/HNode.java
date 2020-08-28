@@ -1,8 +1,11 @@
 package date.iterator.compress.h;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class HNode implements Comparable<HNode> {
 
-    private int originLocation;
+    private List<Integer> originLocations = new LinkedList<>();
 
     private String word;
 
@@ -19,7 +22,9 @@ public class HNode implements Comparable<HNode> {
     private byte code;
 
     public HNode(int originLocation, String word) {
-        this.originLocation = originLocation;
+        if (originLocation != -1) {
+            this.originLocations.add(originLocation);
+        }
         this.word = word;
     }
 
@@ -40,8 +45,8 @@ public class HNode implements Comparable<HNode> {
         return Integer.compare(o.getWeight(), this.getWeight());
     }
 
-    public int getOriginLocation() {
-        return originLocation;
+    public List<Integer> getOriginLocations() {
+        return originLocations;
     }
 
     public String getWord() {
@@ -74,12 +79,19 @@ public class HNode implements Comparable<HNode> {
         return this;
     }
 
-    public void addWeight(int i) {
+    public HNode addWeight(int i) {
         this.weight += 1;
+        return this;
     }
 
-    public void setOriginLocation(int originLocation) {
-        this.originLocation = originLocation;
+    public void addOriginLocation(int originLocation) {
+        if (originLocation != -1) {
+            this.originLocations.add(originLocation);
+        }
+    }
+
+    public void addOriginLocation(List<Integer> originLocations) {
+        this.originLocations.addAll(originLocations);
     }
 
     public void setWord(String word) {

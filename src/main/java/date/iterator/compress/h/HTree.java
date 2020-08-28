@@ -8,6 +8,8 @@ public class HTree {
 
     private HNode root;
 
+    private int realNodeCount = 0;
+
     public HTree() {
 //        root = new HNode(-1, "", Integer.MAX_VALUE);
         currentNode = null;
@@ -20,11 +22,13 @@ public class HTree {
         Map<Character, HNode> rates = new HashMap();
         for (int i = 0; i < list.length; i++) {
             if (rates.containsKey(list[i])) {
-                rates.get(list[i]).addWeight(1);
+                rates.get(list[i]).addWeight(1).addOriginLocation(i);
             } else {
                 rates.put(list[i], new HNode(i, String.valueOf(list[i])){{addWeight(1);}});
             }
         }
+
+        realNodeCount = rates.size();
 
         //(n1.getWeight() == n2.getWeight()) ? 0 : ((n1.getWeight() < n2.getWeight()) ? 1 : -1)
         Comparator<HNode> order = Collections.reverseOrder((n1 ,n2) -> Integer.compare(n2.getWeight(), n1.getWeight()));
@@ -48,9 +52,9 @@ public class HTree {
             if (currentNode.compareTo(o) == 1) {
                 currentNode = coalize(currentNode, o);
             } else if (currentNode.compareTo(o) == 0) {
-                if (currentNode.getOriginLocation() == -1) {
+                if (currentNode.getOriginLocations().isEmpty()) {
                     // 新节点与原相加节点值相同
-                    currentNode.setOriginLocation(o.getOriginLocation());
+                    currentNode.addOriginLocation(o.getOriginLocations());
                     currentNode.setWord(o.getWord());
                     continue;
                 }
@@ -71,11 +75,37 @@ public class HTree {
                 }
             }
         }
-
         System.out.println(currentNode);
         // 最后遍历所有节点生成路径
         // 左大，标记0
         // 右小，标记1
+        byte[] sequence = new byte[realNodeCount];
+        byte[] result = toBytes("0", currentNode, sequence);
+        System.out.println(result);
+    }
+
+    // 前序遍历 递左归右 预防根碰巧有值
+    private byte[] toBytes(String code, HNode node, byte[] sequence){
+        if (currentNode.getOriginLocations().isEmpty()) {
+            for (Integer location : currentNode.getOriginLocations()) {
+                sequence[location] = Byte.parseByte(code);
+            }
+        }
+        if (currentNode.getLeftNode().getOriginLocations().isEmpty()) {
+            code += "0";
+            for (Integer location : currentNode.getOriginLocations()) {
+                sequence[location] = Byte.parseByte(code);
+                toBytes(code, currentNode.getLeftNode(), sequence);
+            }
+        }
+        if (currentNode.getRightNode().getOriginLocations().isEmpty()) {
+            code += "1";
+            for (Integer location : currentNode.getOriginLocations()) {
+                sequence[location] = Byte.parseByte(code);
+                toBytes(code, currentNode.getRightNode(), sequence);
+            }
+        }
+        return sequence;
     }
 
     // 前小后大
