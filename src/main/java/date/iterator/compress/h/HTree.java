@@ -10,6 +10,9 @@ public class HTree {
 
     private int realNodeCount = 0;
 
+    // 词编码映射
+    private Map<String, Byte> wordTable = new HashMap();
+
     public HTree() {
 //        root = new HNode(-1, "", Integer.MAX_VALUE);
         currentNode = null;
@@ -82,26 +85,34 @@ public class HTree {
         byte[] sequence = new byte[realNodeCount];
         byte[] result = toBytes("0", currentNode, sequence);
         System.out.println(result);
+
+        // wordTable 和 result 写文件
     }
 
     // 前序遍历 递左归右 预防根碰巧有值
     private byte[] toBytes(String code, HNode node, byte[] sequence){
         if (currentNode.getOriginLocations().isEmpty()) {
+            byte wordCode = Byte.parseByte(code);
+            wordTable.put(currentNode.getWord(), wordCode);
             for (Integer location : currentNode.getOriginLocations()) {
-                sequence[location] = Byte.parseByte(code);
+                sequence[location] = wordCode;
             }
         }
         if (currentNode.getLeftNode().getOriginLocations().isEmpty()) {
             code += "0";
+            byte wordCode = Byte.parseByte(code);
+            wordTable.put(currentNode.getWord(), wordCode);
             for (Integer location : currentNode.getOriginLocations()) {
-                sequence[location] = Byte.parseByte(code);
+                sequence[location] = wordCode;
                 toBytes(code, currentNode.getLeftNode(), sequence);
             }
         }
         if (currentNode.getRightNode().getOriginLocations().isEmpty()) {
             code += "1";
+            byte wordCode = Byte.parseByte(code);
+            wordTable.put(currentNode.getWord(), wordCode);
             for (Integer location : currentNode.getOriginLocations()) {
-                sequence[location] = Byte.parseByte(code);
+                sequence[location] = wordCode;
                 toBytes(code, currentNode.getRightNode(), sequence);
             }
         }
