@@ -18,9 +18,9 @@ public class HTree {
 
     public void input(final String input) {
         char[] list = splitWords(input);
+        realNodeCount = list.length;
 
         Map<Character, HNode> rates = calculateRates(list);
-        realNodeCount = rates.size();
 
         Comparator<HNode> order = Collections.reverseOrder((n1 ,n2) -> Integer.compare(n2.getWeight(), n1.getWeight()));
 
@@ -96,33 +96,29 @@ public class HTree {
     }
 
     // 递左归右 预防根碰巧有值
-    private byte[] toBytes(String code, HNode node, byte[] sequence){
-        if (node.getOriginLocations().isEmpty()) {
-            byte wordCode = Byte.parseByte(code);
-            wordTable.put(node.getWord(), wordCode);
-            for (Integer location : node.getOriginLocations()) {
-                sequence[location] = wordCode;
-            }
-        }
-        if (node.getLeftNode().getOriginLocations().isEmpty()) {
+    private byte[] toBytes(String code, final HNode node, final byte[] sequence){
+        recordWordTable(code, node, sequence);
+        if (node.getLeftNode() != null) {
             code += "0";
-            byte wordCode = Byte.parseByte(code);
-            wordTable.put(node.getWord(), wordCode);
-            for (Integer location : node.getOriginLocations()) {
-                sequence[location] = wordCode;
-                toBytes(code, node.getLeftNode(), sequence);
-            }
+            recordWordTable(code, node.getLeftNode(), sequence);
+            toBytes(code, node.getLeftNode(), sequence);
         }
-        if (node.getRightNode().getOriginLocations().isEmpty()) {
+        if (node.getRightNode() != null) {
             code += "1";
-            byte wordCode = Byte.parseByte(code);
-            wordTable.put(node.getWord(), wordCode);
-            for (Integer location : node.getOriginLocations()) {
-                sequence[location] = wordCode;
-                toBytes(code, node.getRightNode(), sequence);
-            }
+            recordWordTable(code, node.getRightNode(), sequence);
+            toBytes(code, node.getRightNode(), sequence);
         }
         return sequence;
+    }
+
+    private void recordWordTable(final String code, final HNode node, final byte[] sequence) {
+        if (!node.getOriginLocations().isEmpty()) {
+            byte wordCode = Byte.parseByte(code);
+            wordTable.put(node.getWord(), wordCode);
+            for (Integer location : node.getOriginLocations()) {
+                sequence[location] = wordCode;
+            }
+        }
     }
 
     // 前小后大
