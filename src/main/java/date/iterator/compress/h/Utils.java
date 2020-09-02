@@ -13,9 +13,30 @@ public class Utils {
         return Long.parseLong(value.toString());
     }
 
-    public static void output(String path, byte[] content) throws IOException {
+    public static void output(final String path, final byte[] content) throws IOException {
         OutputStream outputStream = new FileOutputStream(path,true);
         outputStream.write(content);
         outputStream.close();
+    }
+
+    public static int logBy2(final int value) {
+        int result = 0;
+        double loopValue = 1;
+        while (loopValue < value) {
+            result++;
+            loopValue = Math.pow(loopValue, 2);
+        }
+        return result;
+    }
+
+    public static byte[] charToByte(final char c) {
+        byte[] b = new byte[2];
+        b[0] = (byte) ((c & 0xFF00) >> 8);
+        b[1] = (byte) (c & 0xFF);
+        return b;
+    }
+
+    public static char byteToChar(final byte[] b) {
+        return (char) (((b[0] & 0xFF) << 8) | (b[1] & 0xFF));
     }
 }

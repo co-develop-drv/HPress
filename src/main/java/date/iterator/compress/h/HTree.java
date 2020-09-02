@@ -10,7 +10,7 @@ public class HTree {
     private int realNodeCount = 0;
 
     // 词编码映射
-    private Map<String, Byte> wordTable = new HashMap();
+    private Map<byte[], byte[]> wordTable = new HashMap();
 
     public HTree() {
 //        root = new HNode(-1, "", Integer.MAX_VALUE);
@@ -32,6 +32,7 @@ public class HTree {
 
         // todo 相同频率且位置总是相邻的合并
         // todo 暂时不考虑acsii，回头再说，只出现一次的就没必要放到树里
+        //       所有字符转byte[]后记录位置，找出所有大于1的word的位置，以位置为key保存byte[]
         HNode currentNode = nodes.get(0);
         for (int i = 1; i < nodes.size(); i++) {
             System.out.println(nodes.get(i).getWord() + ":" + nodes.get(i).getWeight());
@@ -72,58 +73,64 @@ public class HTree {
     }
 
     private void output(final HNode currentNode) {
-        byte[] sequence = new byte[realNodeCount];
+        List<byte[]> result = new ArrayList<>(realNodeCount);
         // 前序遍历 先左0
-        byte[] result = toBytes("0", currentNode, sequence);
+        int count = Utils.logBy2(realNodeCount);
+        byte[] codes = new byte[count];
+        toBytes(codes, 0, currentNode, result);
         System.out.println(result);
 
         // wordTable 和 result 写文件
-        Iterator<String> keyIterator = wordTable.keySet().iterator();
-        String key = keyIterator.next();
+        Iterator<byte[]> keyIterator = wordTable.keySet().iterator();
+        byte[] key = keyIterator.next();
         String table = "";
         table += key + ":" + wordTable.get(key);
         while (keyIterator.hasNext()) {
             key = keyIterator.next();
-            table +=  "," + key + ":" + wordTable.get(key);
+            table +=  "," + Utils.byteToChar(key) + ":" + wordTable.get(key);
         }
         String dir = "D:\\Github\\HPress\\src\\test\\resources";
         try {
             Utils.output(dir + "\\tree.txt", table.getBytes());
-            Utils.output(dir + "\\aaa.txt", result);
+            for (byte[] bytes : result) {
+                Utils.output(dir + "\\aaa.txt", bytes);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     // 递左归右 预防根碰巧有值
-    private byte[] toBytes(String code, final HNode node, final byte[] sequence){
-        recordWordTable(code, node, sequence);
+    private void toBytes(byte[] code, int bitPosition, final HNode node, final List<byte[]> sequence){
+        // recordWordTable(code, node, sequence); 不需要管根节点
         if (node.getLeftNode() != null) {
-            code += "0";
+            bitPosition += 1;
+
             recordWordTable(code, node.getLeftNode(), sequence);
-            toBytes(code, node.getLeftNode(), sequence);
+            toBytes(code, bitPosition, node.getLeftNode(), sequence);
         }
         if (node.getRightNode() != null) {
-            code += "1";
+            bitPosition += 1;
+            int index = (int) Math.floor(bitPosition / 8);
+            code[index] = (byte) (code[index] | (0x01 << bitPosition));
             recordWordTable(code, node.getRightNode(), sequence);
-            toBytes(code, node.getRightNode(), sequence);
+            toBytes(code, bitPosition, node.getRightNode(), sequence);
         }
-        return sequence;
+//        return sequence;
     }
 
-    private void recordWordTable(final String code, final HNode node, final byte[] sequence) {
+    private void recordWordTable(final byte[] code, final HNode node, final List<byte[]> sequence) {
         if (!node.getOriginLocations().isEmpty()) {
-            byte wordCode = Byte.parseByte(code);
-            wordTable.put(node.getWord(), wordCode);
+            wordTable.put(node.getWord(), code);
             for (Integer location : node.getOriginLocations()) {
-                sequence[location] = wordCode;
+                sequence.add(location, code);
             }
         }
     }
 
     // 前小后大
     private HNode coalize(final HNode c, final HNode o) {
-        HNode up = new HNode(-1, "", c.getWeight() + o.getWeight());
+        HNode up = new HNode(-1, null, c.getWeight() + o.getWeight());
         up.setLeftNode(o); // 左大，标记0
         up.setRightNode(c); // 右小，标记1
         return up;
@@ -136,7 +143,7 @@ public class HTree {
             if (rates.containsKey(list[i])) {
                 rates.get(list[i]).addWeight(1).addOriginLocation(i);
             } else {
-                rates.put(list[i], new HNode(i, String.valueOf(list[i])){{addWeight(1);}});
+                rates.put(list[i], new HNode(i, Utils.charToByte(list[i])){{addWeight(1);}});
             }
         }
         return rates;

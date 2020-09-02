@@ -7,7 +7,10 @@ public class HNode implements Comparable<HNode> {
 
     private List<Integer> originLocations = new LinkedList<>();
 
-    private String word;
+    @Deprecated
+//    private String word;
+
+    private byte[] word;
 
     // 出现次数
     private int weight;
@@ -21,14 +24,14 @@ public class HNode implements Comparable<HNode> {
     private String codePath;
     private byte code;
 
-    public HNode(int originLocation, String word) {
+    public HNode(int originLocation, byte[] word) {
         if (originLocation != -1) {
             this.originLocations.add(originLocation);
         }
         this.word = word;
     }
 
-    public HNode(int originLocation, String word, int weight) {
+    public HNode(int originLocation, byte[] word, int weight) {
         this(originLocation, word);
         this.weight = weight;
     }
@@ -49,7 +52,7 @@ public class HNode implements Comparable<HNode> {
         return originLocations;
     }
 
-    public String getWord() {
+    public byte[] getWord() {
         return word;
     }
 
@@ -94,7 +97,7 @@ public class HNode implements Comparable<HNode> {
         this.originLocations.addAll(originLocations);
     }
 
-    public void setWord(String word) {
+    public void setWord(byte[] word) {
         this.word = word;
     }
 }
