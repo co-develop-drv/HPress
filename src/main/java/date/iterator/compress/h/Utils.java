@@ -20,11 +20,24 @@ public class Utils {
     }
 
     public static int logBy2(final int value) {
+        if (value < 2) {
+            return 0;
+        }
+        int result = 1;
+        double loopValue = 2;
+        while (loopValue < value) {
+            result++;
+            loopValue = Math.pow(loopValue, 2);
+        }
+        return result;
+    }
+
+    public static int bitLength(final int value) {
         int result = 0;
         double loopValue = 1;
         while (loopValue < value) {
             result++;
-            loopValue = Math.pow(loopValue, 2);
+            loopValue *= 2;
         }
         return result;
     }

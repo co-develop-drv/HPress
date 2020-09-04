@@ -75,6 +75,7 @@ public class HTree {
     private void output(final HNode currentNode) {
         List<byte[]> result = new ArrayList<>(realNodeCount);
         // 前序遍历 先左0
+        // ? log? *2?
         int count = Utils.logBy2(realNodeCount);
         byte[] codes = new byte[count];
         toBytes(codes, 0, currentNode, result);
